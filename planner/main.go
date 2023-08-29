@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"gitlab.com/mrossemo/head-first-go/dates"
+	"github.com/marcosrosse/headfirstgo/dates"
 )
 
 func main() {

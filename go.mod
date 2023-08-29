@@ -1,3 +1,3 @@
-module gitlab.com/mrossemo/head-first-go
+module github.com/marcosrosse/headfirstgo
 
 go 1.21.0

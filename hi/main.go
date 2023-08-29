@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gitlab.com/mrossemo/head-first-go/greeting"
-	"gitlab.com/mrossemo/head-first-go/greeting/deutsch"
-	"gitlab.com/mrossemo/head-first-go/greeting/portuguese"
+	"github.com/marcosrosse/headfirstgo/greeting"
+	"github.com/marcosrosse/headfirstgo/greeting/deutsch"
+	"github.com/marcosrosse/headfirstgo/greeting/portuguese"
 )
 
 func main() {

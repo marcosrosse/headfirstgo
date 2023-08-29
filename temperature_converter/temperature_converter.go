@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"gitlab.com/mrossemo/head-first-go/keyboard"
+	"github.com/marcosrosse/headfirstgo/keyboard"
 )
 
 func main() {
