@@ -1,48 +1,62 @@
-// TODO: CHANGE IMPLEMENTATION TO READ FROM A CSV FILE TO USE IP,PORT
 package main
 
 import (
+	"encoding/csv"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
-
-	"github.com/marcosrosse/headfirstgo/datafile"
 )
 
-// To automate the test of connectivity in a list of IP address,port using netcat
-// The list must be:
-// ipAddress:port
-// ipAddress:port
+type Row struct {
+	Col1, Col2 string
+}
 
+// Check connection with a list the remote host in a specific port.
 func main() {
-	list := flag.String("l", "", "Specifiy a list with IP address + port number")
-	output := flag.String("o", "output.csv", "Specify an output file")
+	list := flag.String("l", "", "Specifiy an IP csv list with ip and port.")
+	output := flag.String("o", "output.txt", "Specify an output file.")
+	timeout := flag.String("t", "", "Specify a timeout to the nc command.")
 
 	flag.Parse()
 
-	ipAddress, err := datafile.GetTexts(*list)
+	file, err := os.Open(*list)
 	if err != nil {
-		log.Fatal("You need to specify a list file with ip + port. ", err)
+		log.Fatal(err)
 	}
 
-	file, err := os.Create(*output)
+	reader := csv.NewReader(file)
+	ips := []Row{}
+
+	for {
+		row, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+
+		ips = append(ips, Row{
+			Col1: row[0], Col2: row[1],
+		})
+	}
+
+	file, err = os.Create(*output)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	for _, ip := range ipAddress {
-		nc := exec.Command("nc", "-v", "-w", "3", ip, "22")
-		out, err := nc.Output()
-		if err != nil {
-			fmt.Fprintf(file, "Failed to connect to the address: %s\n", ip)
-			// log.Fatal(err)
-		} else {
-			fmt.Fprintf(file, "Success to connect to the address: %s. Protocol: %s\n", ip, string(out))
-		}
+	for _, ip := range ips {
+		fmt.Printf("Requesting %s on port %s\n", ip.Col1, ip.Col2)
 
+		nc := exec.Command("nc", "-w", *timeout, ip.Col1, ip.Col2)
+		_, err := nc.Output()
+		if err != nil {
+			fmt.Fprintf(file, "Failed to connect to the address: %s:%s\n", ip.Col1, ip.Col2)
+		} else {
+			fmt.Fprintf(file, "Success to connect to the address: %s:%s\n", ip.Col1, ip.Col2)
+		}
 	}
 
 }
